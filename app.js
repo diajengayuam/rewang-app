@@ -24,6 +24,7 @@ const loginError = document.querySelector('#login-error');
 const proofError = document.querySelector('#proof-error');
 let currentProfile = null;
 let currentActivities = [];
+let currentOffers = [];
 
 function formatActivityTime(date) {
   return new Intl.DateTimeFormat('id-ID', {
@@ -151,6 +152,8 @@ function signIn(email, displayName) {
   loginError.hidden = true;
   setProfile(profile);
   currentActivities = [];
+  currentOffers = [];
+  renderOffers();
   renderActivities();
   loginPage.hidden = true;
   appShell.hidden = false;
@@ -213,6 +216,8 @@ document.querySelector('#sign-out').addEventListener('click', () => {
   proofError.hidden = true;
   document.querySelector('#proof-file-label').textContent = 'Pilih gambar profil akun myITS';
   currentActivities = [];
+  currentOffers = [];
+  renderOffers();
   renderActivities();
   document.title = 'REWANG ITS — Tumbuh bareng, saling bantu';
   emailInput.focus();
@@ -243,6 +248,8 @@ document.querySelectorAll('[data-page]').forEach((control) => {
 const dialog = document.querySelector('#request-dialog');
 const serviceSelect = document.querySelector('#request-service');
 const requestForm = document.querySelector('#request-form');
+const offerDialog = document.querySelector('#offer-dialog');
+const offerForm = document.querySelector('#offer-form');
 const toast = document.querySelector('#toast');
 let toastTimeout;
 
@@ -262,6 +269,98 @@ function openRequest(service = '') {
 
 document.querySelectorAll('[data-service]').forEach((control) => {
   control.addEventListener('click', () => openRequest(control.dataset.service));
+});
+
+function renderOffers() {
+  const marketGrid = document.querySelector('#market-grid');
+  marketGrid.querySelectorAll('.user-offer-card').forEach((card) => card.remove());
+  currentOffers.forEach((offer) => {
+    const card = document.createElement('article');
+    card.className = 'market-card user-offer-card';
+    card.dataset.category = offer.category;
+    const top = document.createElement('div');
+    top.className = 'market-card-top';
+    const icon = document.createElement('span');
+    icon.className = 'service-icon print-icon';
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    const use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+    use.setAttribute('href', '#i-hand');
+    svg.append(use);
+    icon.append(svg);
+    const availability = document.createElement('span');
+    availability.className = 'availability local-availability';
+    availability.textContent = 'Tawaranmu · lokal';
+    top.append(icon, availability);
+
+    const category = document.createElement('span');
+    category.className = 'eyebrow';
+    category.textContent = offer.category.toLocaleUpperCase('id');
+    const title = document.createElement('h3');
+    title.textContent = offer.title;
+    const description = document.createElement('p');
+    description.textContent = offer.description;
+    const provider = document.createElement('div');
+    provider.className = 'provider';
+    const avatar = document.createElement('span');
+    avatar.className = 'avatar avatar-provider provider-blue';
+    avatar.textContent = currentProfile.name.split(/\s+/).slice(0, 2).map((part) => part[0].toLocaleUpperCase('id')).join('');
+    const identity = document.createElement('span');
+    const name = document.createElement('strong');
+    name.textContent = currentProfile.name;
+    const department = document.createElement('small');
+    department.textContent = `${currentProfile.department} · ${offer.location}`;
+    identity.append(name, department);
+    const price = document.createElement('span');
+    price.className = 'provider-price';
+    price.textContent = formatRupiah(offer.price);
+    const unit = document.createElement('small');
+    unit.textContent = '/layanan';
+    price.append(unit);
+    provider.append(avatar, identity, price);
+    const status = document.createElement('span');
+    status.className = 'button button-card offer-saved';
+    status.textContent = 'Tawaran tersimpan di sesi ini';
+    card.append(top, category, title, description, provider, status);
+    marketGrid.append(card);
+  });
+  filterServices();
+}
+
+document.querySelector('#open-offer-dialog').addEventListener('click', () => offerDialog.showModal());
+
+offerForm.addEventListener('submit', (event) => {
+  event.preventDefault();
+  offerForm.querySelectorAll('input[type="text"], textarea').forEach((field) => {
+    field.setCustomValidity(field.value.trim() ? '' : 'Isi kolom ini dengan keterangan yang valid.');
+  });
+  if (!offerForm.reportValidity()) return;
+  const offer = {
+    category: document.querySelector('#offer-category').value,
+    title: document.querySelector('#offer-title').value.trim(),
+    description: document.querySelector('#offer-description').value.trim(),
+    price: Number(document.querySelector('#offer-price').value),
+    location: document.querySelector('#offer-location').value.trim(),
+  };
+  if (!Number.isFinite(offer.price)) {
+    document.querySelector('#offer-price').setCustomValidity('Masukkan harga jasa yang valid.');
+    document.querySelector('#offer-price').reportValidity();
+    return;
+  }
+  currentOffers.unshift(offer);
+  renderOffers();
+  addActivity({
+    type: 'offer',
+    title: `Menawarkan jasa: ${offer.title}`,
+    detail: `${formatRupiah(offer.price)} · ${offer.location}`,
+    status: 'Tersimpan lokal',
+  });
+  offerDialog.close();
+  offerForm.reset();
+  showToast('Tawaran muncul di daftar pada perangkat ini. Belum dipublikasikan ke mahasiswa lain.');
+});
+
+offerForm.querySelectorAll('input[type="text"], textarea, input[type="number"]').forEach((field) => {
+  field.addEventListener('input', () => field.setCustomValidity(''));
 });
 
 requestForm.addEventListener('submit', (event) => {

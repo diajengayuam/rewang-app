@@ -184,9 +184,9 @@
           </section>
 
           <section class="page-section" id="page-bantu">
-            <div class="page-intro"><div class="eyebrow"><span class="sun-icon">✳</span> REWANG BANTU</div><h1>Bantuan kecil,<br class="mobile-break" /> berarti besar.</h1><p class="muted">Temukan teman kampus yang siap bantu urusan harianmu.</p></div>
+            <div class="page-intro"><div class="eyebrow"><span class="sun-icon">✳</span> REWANG BANTU</div><h1>Bantuan kecil,<br class="mobile-break" /> berarti besar.</h1><p class="muted">Cari bantuan untuk kebutuhanmu atau tawarkan jasamu ke teman kampus.</p></div>
             <div class="market-banner"><div><span class="hero-tag">GOTONG ROYONG DI SEKITARMU</span><h2>Satu kampus,<br />saling meringankan.</h2><p>Temukan bantuan atau tawarkan keahlianmu ke sesama mahasiswa.</p></div><div class="market-people" aria-hidden="true"><span>✳</span><i>NA</i><i>RA</i><i>DI</i></div></div>
-            <div class="market-tools"><label class="search-box"><svg><use href="#i-search" /></svg><input id="service-search" type="search" placeholder="Cari bantuan, mis. titip cetak..." aria-label="Cari layanan bantuan" /></label><button class="button button-primary" data-service="Bantuan lainnya"><svg><use href="#i-plus" /></svg> Buat permintaan</button></div>
+            <div class="market-tools"><label class="search-box"><svg><use href="#i-search" /></svg><input id="service-search" type="search" placeholder="Cari bantuan, mis. titip cetak..." aria-label="Cari layanan bantuan" /></label><div class="market-actions"><button class="button button-outline" data-service="Bantuan lainnya"><svg><use href="#i-plus" /></svg> Minta bantuan</button><button class="button button-primary" id="open-offer-dialog"><svg><use href="#i-hand" /></svg> Tawarkan jasa</button></div></div>
             <div class="filter-row" role="group" aria-label="Filter layanan">
               <button class="filter-chip selected" data-filter="Semua">Semua</button><button class="filter-chip" data-filter="Dokumen">Dokumen</button><button class="filter-chip" data-filter="Antar">Antar</button><button class="filter-chip" data-filter="Belanja">Belanja</button>
             </div>
@@ -259,6 +259,21 @@
         <button class="button button-primary button-full" type="submit">Kirim permintaan <svg><use href="#i-arrow" /></svg></button>
       </form>
       <p class="legal-note">Prototipe tampilan — permintaan tidak dikirim ke penyedia layanan.</p>
+    </dialog>
+    <dialog class="request-dialog" id="offer-dialog" aria-labelledby="offer-dialog-title">
+      <form method="dialog" class="dialog-close-form"><button class="dialog-close" aria-label="Tutup">×</button></form>
+      <div class="dialog-mark"><svg><use href="#i-hand" /></svg></div>
+      <span class="eyebrow">REWANG BANTU</span><h2 id="offer-dialog-title">Tawarkan jasa</h2>
+      <p class="dialog-subtitle">Bagikan bantuan yang bisa kamu berikan kepada teman kampus.</p>
+      <form id="offer-form">
+        <label class="field-label" for="offer-category">Kategori jasa</label><select id="offer-category" required><option value="">Pilih kategori</option><option value="Dokumen">Dokumen &amp; cetak</option><option value="Antar">Antar barang atau berkas</option><option value="Belanja">Titip beli</option><option value="Lainnya">Lainnya</option></select>
+        <label class="field-label" for="offer-title">Nama jasa</label><input id="offer-title" type="text" maxlength="50" placeholder="Contoh: Bantu print dan jilid tugas" required />
+        <label class="field-label" for="offer-description">Deskripsi singkat</label><textarea id="offer-description" rows="3" maxlength="180" placeholder="Jelaskan bantuan yang bisa kamu berikan" required></textarea>
+        <label class="field-label" for="offer-price">Harga jasa (Rp)</label><input id="offer-price" type="number" min="0" max="1000000" step="500" placeholder="Contoh: 2000" required />
+        <label class="field-label" for="offer-location">Area layanan atau titik temu</label><input id="offer-location" type="text" maxlength="60" placeholder="Contoh: sekitar Perpustakaan ITS" required />
+        <button class="button button-primary button-full" type="submit">Pasang tawaran <svg><use href="#i-arrow" /></svg></button>
+      </form>
+      <p class="legal-note">Tawaran hanya muncul di perangkat ini selama sesi. Belum dipublikasikan ke mahasiswa lain.</p>
     </dialog>
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
     <script src="./app.js"></script>

@@ -198,6 +198,9 @@ h1 { margin: 9px 0 7px; font: 700 29px/1.2 'Manrope', sans-serif; letter-spacing
 .market-people i:nth-of-type(2) { left: 57px; z-index: 1; color: #4b6255; background: #d4e0c3; }
 .market-people i:nth-of-type(3) { left: 112px; color: #6d4d46; background: #e5bda9; }
 .market-tools { display: flex; gap: 10px; margin: 19px 0 12px; }
+.market-actions { display: flex; gap: 8px; }
+.market-actions > .button { min-height: 39px; padding: 0 12px; gap: 6px; white-space: nowrap; font-size: 9px; }
+.market-actions svg { width: 13px; height: 13px; }
 .search-box { min-height: 39px; display: flex; align-items: center; gap: 8px; flex: 1; padding: 0 12px; border: 1px solid #e6eae3; border-radius: 7px; background: #fff; color: #8e988d; }
 .search-box svg { width: 15px; height: 15px; }
 .search-box input { width: 100%; padding: 0; border: 0; outline: 0; color: var(--ink); font-size: 10px; background: transparent; }
@@ -212,6 +215,9 @@ h1 { margin: 9px 0 7px; font: 700 29px/1.2 'Manrope', sans-serif; letter-spacing
 .market-card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px; }
 .availability { display: inline-flex; align-items: center; gap: 6px; padding: 5px 8px; border-radius: 15px; color: #68816b; background: #eff5ec; font-size: 8px; }
 .availability i { width: 5px; height: 5px; box-shadow: none; }
+.local-availability { color: #716395; background: #f1eef7; }
+.offer-saved { display: grid; place-items: center; cursor: default; }
+.offer-saved:hover { background: #f8faf6; }
 .market-card .eyebrow { font-size: 8px; }
 .market-card h3 { margin: 5px 0 6px; font: 700 14px 'Manrope', sans-serif; }
 .market-card > p { min-height: 38px; margin: 0; color: #899289; font-size: 9px; line-height: 1.55; }
@@ -324,10 +330,12 @@ h1 { margin: 9px 0 7px; font: 700 29px/1.2 'Manrope', sans-serif; letter-spacing
 .dialog-subtitle { margin-bottom: 18px; color: #8a938a; font-size: 10px; }
 #request-form { display: grid; gap: 8px; }
 #request-form .field-label { margin: 5px 0 0; }
-#request-form input, #request-form select, #request-form textarea { width: 100%; min-height: 39px; padding: 10px; border: 1px solid #e4e9e1; border-radius: 7px; outline: 0; background: #fff; color: #374138; font-size: 10px; }
-#request-form textarea { min-height: 78px; resize: vertical; }
-#request-form input:focus, #request-form select:focus, #request-form textarea:focus { border-color: #8cad8c; box-shadow: 0 0 0 3px #edf5eb; }
-#request-form .button-full { margin-top: 8px; }
+#offer-form { display: grid; gap: 8px; }
+#offer-form .field-label { margin: 5px 0 0; }
+#request-form input, #request-form select, #request-form textarea, #offer-form input, #offer-form select, #offer-form textarea { width: 100%; min-height: 39px; padding: 10px; border: 1px solid #e4e9e1; border-radius: 7px; outline: 0; background: #fff; color: #374138; font-size: 10px; }
+#request-form textarea, #offer-form textarea { min-height: 78px; resize: vertical; }
+#request-form input:focus, #request-form select:focus, #request-form textarea:focus, #offer-form input:focus, #offer-form select:focus, #offer-form textarea:focus { border-color: #8cad8c; box-shadow: 0 0 0 3px #edf5eb; }
+#request-form .button-full, #offer-form .button-full { margin-top: 8px; }
 .toast { position: fixed; z-index: 10; left: 50%; bottom: 26px; max-width: min(90vw, 430px); padding: 12px 17px; border: 1px solid #386a45; border-radius: 9px; color: white; background: #285d3b; box-shadow: 0 8px 24px #20392730; font-size: 11px; opacity: 0; pointer-events: none; transform: translate(-50%, 14px); transition: opacity .22s, transform .22s; }
 .toast.visible { opacity: 1; transform: translate(-50%, 0); }
 .bottom-nav { display: none; }
@@ -405,7 +413,6 @@ h1 { margin: 9px 0 7px; font: 700 29px/1.2 'Manrope', sans-serif; letter-spacing
   main { padding-right: 4.5%; padding-left: 4.5%; }
   .hero-art { right: 0; width: 42%; transform: scale(.9); transform-origin: right center; }
   .market-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .market-card:last-child { display: none; }
 }
 @media (max-width: 900px) {
   .sidebar { width: 190px; }
@@ -486,15 +493,16 @@ h1 { margin: 9px 0 7px; font: 700 29px/1.2 'Manrope', sans-serif; letter-spacing
   .market-banner h2 { font-size: 20px; }
   .market-banner p { max-width: 230px; font-size: 9px; line-height: 1.5; }
   .market-people { right: -48px; top: 42px; opacity: .75; transform: scale(.72); }
-  .market-tools { gap: 7px; margin-top: 13px; }
+  .market-tools { flex-wrap: wrap; gap: 7px; margin-top: 13px; }
+  .market-tools > .search-box { flex-basis: 100%; }
+  .market-actions { width: 100%; }
+  .market-actions > .button { flex: 1; min-height: 36px; padding: 0 9px; gap: 5px; font-size: 8px; }
   .search-box { min-height: 36px; padding: 0 9px; }
   .search-box input { font-size: 9px; }
-  .market-tools > .button { min-height: 36px; padding: 0 9px; gap: 5px; font-size: 8px; }
   .filter-row { gap: 6px; overflow-x: auto; }
   .filter-chip { flex: 0 0 auto; padding: 6px 10px; font-size: 8px; }
   .market-grid { grid-template-columns: 1fr; }
   .market-card { padding: 14px; }
-  .market-card:last-child { display: flex; }
   .market-card > p { min-height: 0; }
   .demo-note { line-height: 1.5; }
   .talang-layout { grid-template-columns: 1fr; gap: 12px; }
