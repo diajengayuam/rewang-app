@@ -24,4 +24,4 @@ Formulir meminta gambar profil myITS (PNG/JPG/WEBP, maksimal 5 MB) sebagai simul
 
 Aktivitas dan statistik akun dimulai dari nol pada setiap sesi masuk, lalu bertambah ketika pengguna menyimpan permintaan bantuan atau menghitung rencana talangan. Riwayat hanya disimpan sementara di memori browser dan dihapus saat keluar atau memuat ulang halaman; belum ada sinkronisasi atau penyimpanan akun.
 
-Di halaman Rewang Bantu, pengguna dapat memilih mode **Cari bantuan** untuk menjelajah layanan dan membuat permintaan, atau mode **Tawarkan jasa** untuk memasang dan melihat jasa yang ditawarkan. Tawaran baru hanya ditampilkan di daftar marketplace perangkat dan sesi saat ini; belum ada backend, publikasi ke pengguna lain, atau transaksi.
+Di halaman Rewang Bantu, pengguna dapat memilih mode **Cari bantuan** untuk menjelajah layanan, membuat permintaan, dan memantau statusnya; pada mode **Tawarkan jasa**, pengguna dapat melihat permintaan dalam sesi yang sama, mencatat simulasi kesediaan membantu, memasang jasa, menjeda, atau menghapusnya. Data tetap lokal pada perangkat dan sesi saat ini; belum ada backend, sinkronisasi ke pengguna lain, notifikasi, atau transaksi.

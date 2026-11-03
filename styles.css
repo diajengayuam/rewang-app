@@ -250,6 +250,15 @@ h1 { margin: 9px 0 7px; font: 700 29px/1.2 'Manrope', sans-serif; letter-spacing
 .offer-intro > .button { flex: 0 0 auto; }
 .offer-list-heading { margin-top: 22px; }
 .offer-empty { margin-top: 10px; padding: 20px; border: 1px dashed #e2e8de; border-radius: 9px; background: #fbfcfa; }
+.offer-actions { display: flex; gap: 7px; margin-top: auto; }
+.offer-manage-button, .offer-remove-button { min-height: 32px; flex: 1; padding: 0 8px; font-size: 8px; }
+.offer-remove-button { color: #96645d; }
+.paused-availability { color: #7f817d; background: #f0f1ee; }
+.request-list-heading { margin-top: 22px; }
+.request-owner-status, .request-card-action { display: grid; align-items: end; min-height: 34px; margin-top: auto; padding-top: 10px; color: #648065; font-size: 8px; }
+.request-card-action .button { width: 100%; }
+.request-matched { color: #5e7590; background: #edf2f7; }
+.request-empty { margin-top: 10px; padding: 20px; border: 1px dashed #e2e8de; border-radius: 9px; background: #fbfcfa; }
 
 /* Rewang Talang */
 .talang-layout { display: grid; grid-template-columns: minmax(0, 1.23fr) minmax(265px, .77fr); gap: 16px; align-items: start; }

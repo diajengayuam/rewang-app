@@ -25,6 +25,9 @@ const proofError = document.querySelector('#proof-error');
 let currentProfile = null;
 let currentActivities = [];
 let currentOffers = [];
+let currentRequests = [];
+let nextOfferId = 1;
+let nextRequestId = 1;
 
 function formatActivityTime(date) {
   return new Intl.DateTimeFormat('id-ID', {
@@ -153,8 +156,13 @@ function signIn(email, displayName) {
   setProfile(profile);
   currentActivities = [];
   currentOffers = [];
+  currentRequests = [];
+  nextOfferId = 1;
+  nextRequestId = 1;
   renderOffers();
+  renderRequests();
   renderActivities();
+  setMarketMode('request');
   loginPage.hidden = true;
   appShell.hidden = false;
   bottomNav.hidden = false;
@@ -217,7 +225,11 @@ document.querySelector('#sign-out').addEventListener('click', () => {
   document.querySelector('#proof-file-label').textContent = 'Pilih gambar profil akun myITS';
   currentActivities = [];
   currentOffers = [];
+  currentRequests = [];
+  nextOfferId = 1;
+  nextRequestId = 1;
   renderOffers();
+  renderRequests();
   renderActivities();
   document.title = 'REWANG ITS — Tumbuh bareng, saling bantu';
   emailInput.focus();
@@ -289,8 +301,8 @@ function renderOffers() {
     svg.append(use);
     icon.append(svg);
     const availability = document.createElement('span');
-    availability.className = 'availability local-availability';
-    availability.textContent = 'Tawaranmu · lokal';
+    availability.className = `availability ${offer.active ? 'local-availability' : 'paused-availability'}`;
+    availability.textContent = offer.active ? 'Aktif · lokal' : 'Dijeda · lokal';
     top.append(icon, availability);
 
     const category = document.createElement('span');
@@ -318,11 +330,72 @@ function renderOffers() {
     unit.textContent = '/layanan';
     price.append(unit);
     provider.append(avatar, identity, price);
-    const status = document.createElement('span');
-    status.className = 'button button-card offer-saved';
-    status.textContent = 'Tawaran tersimpan di sesi ini';
-    card.append(top, category, title, description, provider, status);
+    const actions = document.createElement('div');
+    actions.className = 'offer-actions';
+    const toggle = document.createElement('button');
+    toggle.className = 'button button-outline offer-manage-button';
+    toggle.type = 'button';
+    toggle.dataset.offerAction = 'toggle';
+    toggle.dataset.offerId = String(offer.id);
+    toggle.textContent = offer.active ? 'Jeda tawaran' : 'Aktifkan tawaran';
+    const remove = document.createElement('button');
+    remove.className = 'button button-outline offer-remove-button';
+    remove.type = 'button';
+    remove.dataset.offerAction = 'remove';
+    remove.dataset.offerId = String(offer.id);
+    remove.textContent = 'Hapus';
+    actions.append(toggle, remove);
+    card.append(top, category, title, description, provider, actions);
     offerGrid.append(card);
+  });
+}
+
+function renderRequests() {
+  const myRequestGrid = document.querySelector('#my-request-grid');
+  const incomingGrid = document.querySelector('#incoming-request-grid');
+  myRequestGrid.replaceChildren();
+  incomingGrid.replaceChildren();
+  document.querySelector('#request-empty').hidden = currentRequests.length > 0;
+  document.querySelector('#incoming-request-empty').hidden = !currentRequests.some((request) => request.status === 'open');
+  currentRequests.forEach((request) => {
+    const card = document.createElement('article');
+    card.className = 'market-card request-card';
+    card.dataset.category = request.category;
+    const top = document.createElement('div');
+    top.className = 'market-card-top';
+    const category = document.createElement('span');
+    category.className = 'eyebrow';
+    category.textContent = request.service.toLocaleUpperCase('id');
+    const availability = document.createElement('span');
+    availability.className = `availability ${request.status === 'open' ? '' : 'request-matched'}`;
+    availability.textContent = request.status === 'open' ? 'Mencari bantuan' : 'Simulasi kesediaan';
+    top.append(availability);
+    const title = document.createElement('h3');
+    title.textContent = request.details;
+    const detail = document.createElement('p');
+    detail.textContent = `Titik temu: ${request.location}`;
+    const action = document.createElement('span');
+    action.className = 'request-card-action';
+    if (request.status === 'open') {
+      const readyButton = document.createElement('button');
+      readyButton.className = 'button button-card';
+      readyButton.type = 'button';
+      readyButton.dataset.requestReady = String(request.id);
+      readyButton.textContent = 'Simulasikan kesediaan bantu';
+      action.append(readyButton);
+    } else {
+      action.textContent = 'Kesediaan tercatat di sesi ini';
+    }
+
+    const customerCard = card.cloneNode();
+    customerCard.append(top.cloneNode(true), category.cloneNode(true), title.cloneNode(true), detail.cloneNode(true));
+    const customerStatus = document.createElement('div');
+    customerStatus.className = 'request-owner-status';
+    customerStatus.textContent = request.status === 'open' ? 'Menunggu teman kampus' : 'Kesediaan bantuan disimulasikan';
+    customerCard.append(customerStatus);
+    myRequestGrid.append(customerCard);
+    card.append(top, category, title, detail, action);
+    incomingGrid.append(card);
   });
 }
 
@@ -337,11 +410,13 @@ offerForm.addEventListener('submit', (event) => {
   });
   if (!offerForm.reportValidity()) return;
   const offer = {
+    id: nextOfferId++,
     category: document.querySelector('#offer-category').value,
     title: document.querySelector('#offer-title').value.trim(),
     description: document.querySelector('#offer-description').value.trim(),
     price: Number(document.querySelector('#offer-price').value),
     location: document.querySelector('#offer-location').value.trim(),
+    active: true,
   };
   if (!Number.isFinite(offer.price)) {
     document.querySelector('#offer-price').setCustomValidity('Masukkan harga jasa yang valid.');
@@ -366,15 +441,61 @@ offerForm.querySelectorAll('input[type="text"], textarea, input[type="number"]')
   field.addEventListener('input', () => field.setCustomValidity(''));
 });
 
+document.querySelector('#offer-grid').addEventListener('click', (event) => {
+  const button = event.target.closest('[data-offer-action]');
+  if (!button) return;
+  const offer = currentOffers.find((item) => item.id === Number(button.dataset.offerId));
+  if (!offer) return;
+  if (button.dataset.offerAction === 'toggle') {
+    offer.active = !offer.active;
+    showToast(offer.active ? 'Tawaran diaktifkan untuk sesi ini.' : 'Tawaran dijeda untuk sesi ini.');
+  } else {
+    currentOffers = currentOffers.filter((item) => item.id !== offer.id);
+    showToast('Tawaran dihapus dari sesi ini.');
+  }
+  renderOffers();
+});
+
+document.querySelector('#incoming-request-grid').addEventListener('click', (event) => {
+  const button = event.target.closest('[data-request-ready]');
+  if (!button) return;
+  const request = currentRequests.find((item) => item.id === Number(button.dataset.requestReady));
+  if (!request || request.status !== 'open') return;
+  request.status = 'matched';
+  renderRequests();
+  addActivity({
+    type: 'offer',
+    title: `Bersedia membantu: ${request.service}`,
+    detail: request.location,
+    status: 'Tercatat lokal',
+  });
+  showToast('Kesediaan membantu dicatat di sesi ini; belum ada notifikasi yang dikirim.');
+});
+
 requestForm.addEventListener('submit', (event) => {
   event.preventDefault();
+  ['#request-details', '#request-location'].forEach((selector) => {
+    const field = document.querySelector(selector);
+    field.setCustomValidity(field.value.trim() ? '' : 'Isi kolom ini dengan keterangan yang valid.');
+  });
   if (!requestForm.reportValidity()) return;
   const service = serviceSelect.value;
+  const details = document.querySelector('#request-details').value.trim();
   const location = document.querySelector('#request-location').value.trim();
+  const request = {
+    id: nextRequestId++,
+    service,
+    category: service === 'Antar berkas' ? 'Antar' : service === 'Titip beli' ? 'Belanja' : 'Dokumen',
+    details,
+    location,
+    status: 'open',
+  };
+  currentRequests.unshift(request);
+  renderRequests();
   addActivity({
     type: 'help',
     title: `Permintaan: ${service}`,
-    detail: location,
+    detail: `${details} · ${location}`,
     status: 'Tersimpan',
   });
   dialog.close();
@@ -411,6 +532,10 @@ document.querySelectorAll('[data-market-mode]').forEach((tab) => {
     setMarketMode(nextMode);
     nextTab.focus();
   });
+});
+
+document.querySelectorAll('#request-details, #request-location').forEach((field) => {
+  field.addEventListener('input', () => field.setCustomValidity(''));
 });
 
 function filterServices() {
