@@ -372,7 +372,15 @@ h1 { margin: 9px 0 7px; font: 700 29px/1.2 'Manrope', sans-serif; letter-spacing
 .auth-input-wrap input { width: 100%; min-width: 0; border: 0; outline: 0; color: #303c32; background: transparent; font-size: 10px; }
 .auth-input-wrap input::placeholder { color: #a4aca3; }
 #login-form .button-full { margin-top: 5px; }
+.visually-hidden-input { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+.proof-picker { min-height: 47px; display: grid; grid-template-columns: 19px 1fr; align-items: center; column-gap: 9px; padding: 8px 11px; border: 1px dashed #cfdacb; border-radius: 7px; color: #58715a; background: #fbfcfa; cursor: pointer; }
+.proof-picker:hover, .visually-hidden-input:focus-visible + .proof-picker { border-color: #789c78; background: #f5f8f2; }
+.proof-picker svg { grid-row: span 2; width: 16px; height: 16px; }
+.proof-picker span { overflow: hidden; color: #526553; font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
+.proof-picker small { color: #929a91; font-size: 7px; }
+.proof-guidance { margin: -2px 0 0; color: #8d958d; font-size: 8px; line-height: 1.5; }
 .auth-error { margin: 0; color: #a44c41; font-size: 9px; line-height: 1.5; }
+.auth-error[hidden] { display: none; }
 .demo-account-list { display: grid; gap: 5px; margin-top: 15px; padding-top: 12px; border-top: 1px solid #edf0eb; }
 .demo-list-label { margin-bottom: 3px; color: #899289; font-size: 8px; line-height: 1.6; }
 .demo-list-label code { padding: 2px 4px; border-radius: 4px; color: #466548; background: #edf4eb; font: 700 8px 'DM Sans', sans-serif; }
@@ -385,6 +393,7 @@ h1 { margin: 9px 0 7px; font: 700 29px/1.2 'Manrope', sans-serif; letter-spacing
 .profile-faculty { max-width: 100%; }
 .profile-faculty > span { overflow-wrap: anywhere; }
 .sign-out-button { display: block; margin: 12px auto 0; padding: 6px 10px; border: 0; color: #8c665e; background: transparent; font-size: 9px; cursor: pointer; }
+.verification-note { margin: 10px 0 0; padding: 9px 10px; border-radius: 7px; color: #88734e; background: #fbf6e9; font-size: 8px; line-height: 1.5; }
 
 @media (min-width: 1500px) {
   main { padding-right: 7.5%; padding-left: 7.5%; }

@@ -19,7 +19,9 @@ const bottomNav = document.querySelector('#app-bottom-nav');
 const loginForm = document.querySelector('#login-form');
 const emailInput = document.querySelector('#its-email');
 const displayNameInput = document.querySelector('#display-name');
+const proofInput = document.querySelector('#myits-proof');
 const loginError = document.querySelector('#login-error');
+const proofError = document.querySelector('#proof-error');
 let currentProfile = null;
 let currentActivities = [];
 
@@ -123,6 +125,7 @@ function setProfile(profile) {
   });
   document.querySelector('[data-profile-first-name]').textContent = profile.name.split(/\s+/)[0];
   document.querySelector('.avatar-top').setAttribute('aria-label', `Buka profil ${profile.name}`);
+  document.querySelector('#profile-verification-status').lastChild.textContent = ' Bukti lokal dipilih · belum diperiksa';
 }
 
 function signIn(email, displayName) {
@@ -159,6 +162,7 @@ loginForm.addEventListener('submit', (event) => {
   event.preventDefault();
   const email = emailInput.value.trim().toLocaleLowerCase('id');
   const displayName = displayNameInput.value.trim();
+  const proof = proofInput.files?.[0];
   if (!emailInput.checkValidity() || !/^\d{10}@student\.its\.ac\.id$/i.test(email)) {
     loginError.textContent = 'Masukkan email mahasiswa ITS dengan format 10 digit NRP@student.its.ac.id.';
     loginError.hidden = false;
@@ -171,7 +175,30 @@ loginForm.addEventListener('submit', (event) => {
     displayNameInput.focus();
     return;
   }
+  if (!proof) {
+    proofError.textContent = 'Pilih tangkapan layar profil myITS untuk melanjutkan.';
+    proofError.hidden = false;
+    proofInput.focus();
+    return;
+  }
+  if (!['image/png', 'image/jpeg', 'image/webp'].includes(proof.type) || proof.size > 5 * 1024 * 1024) {
+    proofError.textContent = 'Pilih gambar PNG, JPG, atau WEBP berukuran maksimal 5 MB.';
+    proofError.hidden = false;
+    proofInput.value = '';
+    document.querySelector('#proof-file-label').textContent = 'Pilih gambar profil akun myITS';
+    proofInput.focus();
+    return;
+  }
+  proofError.hidden = true;
   signIn(email, displayName);
+});
+
+proofInput.addEventListener('change', () => {
+  const proof = proofInput.files?.[0];
+  proofError.hidden = true;
+  document.querySelector('#proof-file-label').textContent = proof
+    ? `${proof.name} · ${(proof.size / (1024 * 1024)).toFixed(1)} MB`
+    : 'Pilih gambar profil akun myITS';
 });
 
 document.querySelector('#sign-out').addEventListener('click', () => {
@@ -182,6 +209,9 @@ document.querySelector('#sign-out').addEventListener('click', () => {
   loginError.hidden = true;
   emailInput.value = '';
   displayNameInput.value = '';
+  proofInput.value = '';
+  proofError.hidden = true;
+  document.querySelector('#proof-file-label').textContent = 'Pilih gambar profil akun myITS';
   currentActivities = [];
   renderActivities();
   document.title = 'REWANG ITS — Tumbuh bareng, saling bantu';
