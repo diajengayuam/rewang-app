@@ -1,4 +1,4 @@
-const CACHE_NAME = 'rewang-its-v16';
+const CACHE_NAME = 'rewang-its-v17';
 const APP_SHELL = [
   './',
   './index.html',

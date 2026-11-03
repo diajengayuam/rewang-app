@@ -272,8 +272,9 @@ document.querySelectorAll('[data-service]').forEach((control) => {
 });
 
 function renderOffers() {
-  const marketGrid = document.querySelector('#market-grid');
-  marketGrid.querySelectorAll('.user-offer-card').forEach((card) => card.remove());
+  const offerGrid = document.querySelector('#offer-grid');
+  offerGrid.replaceChildren();
+  document.querySelector('#offer-empty').hidden = currentOffers.length > 0;
   currentOffers.forEach((offer) => {
     const card = document.createElement('article');
     card.className = 'market-card user-offer-card';
@@ -321,12 +322,13 @@ function renderOffers() {
     status.className = 'button button-card offer-saved';
     status.textContent = 'Tawaran tersimpan di sesi ini';
     card.append(top, category, title, description, provider, status);
-    marketGrid.append(card);
+    offerGrid.append(card);
   });
-  filterServices();
 }
 
-document.querySelector('#open-offer-dialog').addEventListener('click', () => offerDialog.showModal());
+document.querySelectorAll('[data-open-offer]').forEach((button) => {
+  button.addEventListener('click', () => offerDialog.showModal());
+});
 
 offerForm.addEventListener('submit', (event) => {
   event.preventDefault();
@@ -348,6 +350,7 @@ offerForm.addEventListener('submit', (event) => {
   }
   currentOffers.unshift(offer);
   renderOffers();
+  setMarketMode('offer');
   addActivity({
     type: 'offer',
     title: `Menawarkan jasa: ${offer.title}`,
@@ -386,9 +389,33 @@ dialog.addEventListener('click', (event) => {
 let activeFilter = 'Semua';
 const searchInput = document.querySelector('#service-search');
 
+function setMarketMode(mode) {
+  document.querySelectorAll('[data-market-mode]').forEach((tab) => {
+    const selected = tab.dataset.marketMode === mode;
+    tab.classList.toggle('selected', selected);
+    tab.setAttribute('aria-selected', String(selected));
+    tab.tabIndex = selected ? 0 : -1;
+  });
+  document.querySelectorAll('.market-mode-panel').forEach((panel) => {
+    panel.hidden = panel.id !== `panel-${mode}-help`;
+  });
+}
+
+document.querySelectorAll('[data-market-mode]').forEach((tab) => {
+  tab.addEventListener('click', () => setMarketMode(tab.dataset.marketMode));
+  tab.addEventListener('keydown', (event) => {
+    if (!['ArrowLeft', 'ArrowRight'].includes(event.key)) return;
+    event.preventDefault();
+    const nextMode = tab.dataset.marketMode === 'request' ? 'offer' : 'request';
+    const nextTab = document.querySelector(`[data-market-mode="${nextMode}"]`);
+    setMarketMode(nextMode);
+    nextTab.focus();
+  });
+});
+
 function filterServices() {
   const search = searchInput.value.trim().toLocaleLowerCase('id');
-  document.querySelectorAll('.market-card').forEach((card) => {
+  document.querySelectorAll('#market-grid .market-card').forEach((card) => {
     const matchesCategory = activeFilter === 'Semua'
       || card.dataset.category.split(' ').includes(activeFilter);
     const matchesSearch = !search || card.textContent.toLocaleLowerCase('id').includes(search);
